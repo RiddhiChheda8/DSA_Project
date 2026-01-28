@@ -1,0 +1,418 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>TIMSCDR Campus Navigator | DSA Project</title>
+    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+
+<body>
+    <!-- Header -->
+    <header>
+        <div class="header-content">
+            <h1><i class="fas fa-university"></i> TIMSCDR Campus Navigator</h1>
+            <p class="subtitle"> Data Structures & Applications Project</p>
+            <div class="badges">
+                <span class="badge"><i class="fas fa-map-marked-alt"></i> Dijkstra's Algorithm</span>
+                <span class="badge"><i class="fas fa-sitemap"></i> Binary Search Tree</span>
+                <span class="badge"><i class="fas fa-sort-amount-up"></i> Quick Sort</span>
+            </div>
+        </div>
+    </header>
+
+    <!-- In the main container, restructure like this: -->
+    <div class="container">
+        <!-- Left Panel - Only Controls -->
+        <div class="left-panel">
+            <section class="card">
+                <h2><i class="fas fa-route"></i> Campus Navigation</h2>
+
+                <div class="form-group">
+                    <label><i class="fas fa-map-pin"></i> Your Location</label>
+                    <select id="startLocation">
+                        <option value="">-- Select Your Location --</option>
+                        <option value="Main Gate">🏛️ Main Gate</option>
+                        <option value="Academic Block">🏫 Academic Block</option>
+                        <option value="Library">📚 Library</option>
+                        <option value="MCA Department">💻 MCA Department</option>
+                        <option value="Cafeteria">🍔 Cafeteria</option>
+                        <option value="Sports Complex">⚽ Sports Complex</option>
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <label><i class="fas fa-flag"></i> Destination</label>
+                    <select id="destinationInput">
+                        <option value="" selected>-- Select Destination --</option>
+                        <option value="Main Gate">🏛️ Main Gate</option>
+                        <option value="Academic Block">🏫 Academic Block</option>
+                        <option value="Library">📚 Library</option>
+                        <option value="MCA Department">💻 MCA Department</option>
+                        <option value="Cafeteria">🍔 Cafeteria</option>
+                        <option value="Sports Complex">⚽ Sports Complex</option>
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <label><i class="fas fa-cogs"></i> Algorithm</label>
+                    <div class="algo-select">
+                        <select id="algorithmSelect">
+                            <option value="dijkstra">Dijkstra's Algorithm</option>
+                            <option value="bfs">BFS Algorithm</option>
+                        </select>
+                    </div>
+                </div>
+
+                <button class="primary-btn" onclick="findPath()">
+                    <i class="fas fa-directions"></i> Find Shortest Path
+                </button>
+
+                <!-- Results -->
+                <div class="results">
+                    <h3><i class="fas fa-info-circle"></i> Path Information</h3>
+                    <div class="result-row">
+                        <span>Algorithm:</span>
+                        <strong id="algoName">-</strong>
+                    </div>
+                    <div class="result-row">
+                        <span>Distance:</span>
+                        <strong id="pathDistance">- meters</strong>
+                    </div>
+                    <div class="result-row">
+                        <span>Path:</span>
+                        <div id="pathSteps" class="path-text">-</div>
+                    </div>
+                    <div class="complexity">
+                        <div class="comp">
+                            <span>Time:</span>
+                            <code id="timeComp">-</code>
+                        </div>
+                        <div class="comp">
+                            <span>Space:</span>
+                            <code id="spaceComp">-</code>
+                        </div>
+                    </div>
+                </div>
+            </section>
+        </div>
+
+        <!-- Right Panel - Map Only -->
+        <div class="right-panel">
+            <!-- Campus Map -->
+            <section class="card map-card">
+                <h2><i class="fas fa-map"></i> Campus Map</h2>
+                <div class="map-container">
+                    <svg id="campusMap" viewBox="0 0 800 550">
+                        <!-- Background -->
+                        <rect width="800" height="550" fill="#f8fafc" />
+
+                        <!-- Roads -->
+                        <path class="road main" d="M100,280 L400,130 L700,280" />
+                        <path class="road main" d="M400,130 L400,430" />
+                        <path class="road side" d="M100,280 L250,420 L400,430 L550,420 L700,280" />
+
+                        <!-- Buildings with better spacing -->
+                        <g class="building" id="Main Gate">
+                            <rect x="80" y="260" width="50" height="50" rx="10" class="bldg" />
+                            <text x="105" y="290" class="bldg-icon" font-size="28">🏛️</text>
+                            <text x="105" y="325" class="bldg-label" font-size="13" font-weight="bold">Main Gate</text>
+                        </g>
+
+                        <g class="building" id="Academic Block">
+                            <rect x="380" y="110" width="50" height="50" rx="10" class="bldg" />
+                            <text x="405" y="140" class="bldg-icon" font-size="28">🏫</text>
+                            <text x="405" y="175" class="bldg-label" font-size="13" font-weight="bold">Academic
+                                Block</text>
+                        </g>
+
+                        <g class="building" id="Library">
+                            <circle cx="400" cy="280" r="32" class="bldg" />
+                            <text x="400" y="287" class="bldg-icon" font-size="30">📚</text>
+                            <text x="400" y="325" class="bldg-label" font-size="13" font-weight="bold">Central
+                                Library</text>
+                        </g>
+
+                        <g class="building" id="MCA Department">
+                            <rect x="230" y="400" width="50" height="50" rx="10" class="bldg" />
+                            <text x="255" y="430" class="bldg-icon" font-size="28">💻</text>
+                            <text x="255" y="465" class="bldg-label" font-size="13" font-weight="bold">MCA
+                                Department</text>
+                        </g>
+
+                        <g class="building" id="Cafeteria">
+                            <rect x="530" y="400" width="50" height="50" rx="10" class="bldg" />
+                            <text x="555" y="430" class="bldg-icon" font-size="28">🍔</text>
+                            <text x="555" y="465" class="bldg-label" font-size="13" font-weight="bold">Cafeteria</text>
+                        </g>
+
+                        <g class="building" id="Sports Complex">
+                            <circle cx="700" cy="280" r="32" class="bldg" />
+                            <text x="700" y="287" class="bldg-icon" font-size="30">⚽</text>
+                            <text x="700" y="325" class="bldg-label" font-size="13" font-weight="bold">Sports
+                                Complex</text>
+                        </g>
+
+                        <!-- Path Layer -->
+                        <g id="pathLayer"></g>
+
+                        <!-- User Marker - Properly positioned -->
+                        <g id="userMarker">
+                            <circle cx="105" cy="285" r="14" class="user-dot" />
+                            <circle cx="105" cy="285" r="22" class="user-pulse" />
+                            <text x="105" y="250" class="user-label" font-size="12" font-weight="bold">📍 YOU</text>
+                        </g>
+                    </svg>
+                </div>
+
+                <!-- Map Legend -->
+                <div class="legend">
+                    <h4><i class="fas fa-key"></i> Map Legend</h4>
+                    <div class="legend-grid">
+                        <div class="legend-item">
+                            <div class="legend-dot user"></div>
+                            <span>Your Location</span>
+                        </div>
+                        <div class="legend-item">
+                            <div class="legend-dot path"></div>
+                            <span>Shortest Path</span>
+                        </div>
+                        <div class="legend-item">
+                            <div class="legend-dot visited"></div>
+                            <span>Visited Nodes</span>
+                        </div>
+                    </div>
+                </div>
+            </section>
+        </div>
+    </div>
+
+    <!-- Algorithm Steps Section (Below Map - Full Width) -->
+    <div class="algorithm-section">
+        <section class="card full-width-card">
+            <h2><i class="fas fa-play-circle"></i> Algorithm Visualization</h2>
+            <div id="algoSteps" class="algo-steps-container">
+                <div class="empty-algo">
+                    <div class="algo-icon">
+                        <i class="fas fa-code-branch"></i>
+                    </div>
+                    <h3>Algorithm Visualization</h3>
+                    <p>Find a path to see detailed step-by-step algorithm visualization</p>
+                    <div class="algo-tips">
+                        <div class="tip">
+                            <i class="fas fa-1"></i>
+                            <span>Select your location and destination</span>
+                        </div>
+                        <div class="tip">
+                            <i class="fas fa-2"></i>
+                            <span>Choose an algorithm (Dijkstra or BFS)</span>
+                        </div>
+                        <div class="tip">
+                            <i class="fas fa-3"></i>
+                            <span>Click "Find Shortest Path" to visualize</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </div>
+
+    <!-- DSA Visualizations Section (Below Map) -->
+    <div class="dsa-section">
+        <!-- BST Visualization -->
+        <section class="card wide-card">
+            <div class="card-header">
+                <div class="header-left">
+                    <div class="card-icon">
+                        <i class="fas fa-sitemap"></i>
+                    </div>
+                    <div>
+                        <h2>Binary Search Tree Visualization</h2>
+                        <p class="card-subtitle">Insert, search and visualize BST operations (O(log n) complexity)</p>
+                    </div>
+                </div>
+                <div class="bst-info">
+                    <div class="info-box">
+                        <span>Height:</span>
+                        <strong id="treeHeight">0</strong>
+                    </div>
+                    <div class="info-box">
+                        <span>Nodes:</span>
+                        <strong id="nodeCount">0</strong>
+                    </div>
+                </div>
+            </div>
+
+            <!-- BST Controls -->
+            <div class="bst-controls">
+                <div class="input-group">
+                    <input type="number" id="bstValue" placeholder="Enter a number (1-100)" min="1" max="100">
+                    <button class="btn btn-success" onclick="insertBST()">
+                        <i class="fas fa-plus"></i> Insert
+                    </button>
+                    <button class="btn btn-primary" onclick="searchBST()">
+                        <i class="fas fa-search"></i> Search
+                    </button>
+                    <button class="btn btn-danger" onclick="clearBST()">
+                        <i class="fas fa-trash"></i> Clear All
+                    </button>
+                </div>
+                <div class="info-text">
+                    <p><i class="fas fa-info-circle"></i> BST automatically balances as you insert values</p>
+                </div>
+            </div>
+
+            <!-- Add this after BST controls -->
+            <div class="bst-status">
+                <div id="bstMessage" class="bst-message"></div>
+            </div>
+
+            <!-- BST Visualization Container -->
+            <div id="bstContainer" class="bst-container">
+                <div class="empty-bst">
+                    <i class="fas fa-tree"></i>
+                    <h3>Empty Binary Search Tree</h3>
+                    <p>Insert values using the controls above to build the tree</p>
+                    <div class="sample-values">
+                        <p><strong>Try these values:</strong></p>
+                        <div class="sample-btns">
+                            <button class="sample-btn" onclick="insertSample([50,30,70,20,40,60,80])">Sample 1</button>
+                            <button class="sample-btn" onclick="insertSample([100,50,150,25,75,125,175])">Sample
+                                2</button>
+                            <button class="sample-btn" onclick="insertSample([45,23,67,12,34,56,89])">Sample 3</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- BST Explanation -->
+            <div class="bst-explanation">
+                <h4><i class="fas fa-lightbulb"></i> How BST Works:</h4>
+                <ul>
+                    <li><strong>Left Child:</strong> Values less than parent node</li>
+                    <li><strong>Right Child:</strong> Values greater than parent node</li>
+                    <li><strong>Search Time:</strong> O(log n) on average, O(n) worst case</li>
+                    <li><strong>Used in:</strong> Databases, file systems, memory allocators</li>
+                </ul>
+            </div>
+        </section>
+
+        <!-- Quick Sort Visualization -->
+        <section class="card wide-card">
+            <div class="card-header">
+                <div class="header-left">
+                    <div class="card-icon">
+                        <i class="fas fa-sort-amount-up"></i>
+                    </div>
+                    <div>
+                        <h2>Quick Sort Visualization</h2>
+                        <p class="card-subtitle">Visualize the Quick Sort algorithm - Most efficient sorting algorithm
+                            (O(n log n) average)</p>
+                    </div>
+                </div>
+                <div class="sort-info">
+                    <div class="info-box">
+                        <span>Comparisons:</span>
+                        <strong id="comparisonCount">0</strong>
+                    </div>
+                    <div class="info-box">
+                        <span>Time:</span>
+                        <strong id="sortTime">0ms</strong>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Sorting Controls -->
+            <div class="sort-controls">
+                <div class="control-group">
+                    <button class="btn btn-generate" onclick="generateArray()">
+                        <i class="fas fa-random"></i> Generate Random Array
+                    </button>
+                    <button class="btn btn-sort" onclick="startSorting()">
+                        <i class="fas fa-play"></i> Start Quick Sort
+                    </button>
+                    <button class="btn btn-reset" onclick="resetSorting()">
+                        <i class="fas fa-redo"></i> Reset
+                    </button>
+                    <div class="size-control">
+                        <label>Array Size:</label>
+                        <input type="range" id="arraySize" min="10" max="50" value="20" onchange="changeArraySize()">
+                        <span id="sizeValue">20</span>
+                    </div>
+                </div>
+                <div class="info-text">
+                    <p><i class="fas fa-info-circle"></i> Red bar = Pivot | Orange bars = Comparing | Green bars =
+                        Sorted</p>
+                </div>
+            </div>
+
+            <!-- Array Visualization -->
+            <div id="arrayContainer" class="array-container">
+                <!-- Array bars will be generated here -->
+            </div>
+
+            <!-- Complexity Cards -->
+            <div class="complexity-cards">
+                <div class="complexity-card best">
+                    <div class="comp-title">Best Case</div>
+                    <div class="comp-value">O(n log n)</div>
+                    <div class="comp-desc">When pivot divides array equally</div>
+                </div>
+                <div class="complexity-card average">
+                    <div class="comp-title">Average Case</div>
+                    <div class="comp-value">O(n log n)</div>
+                    <div class="comp-desc">Typical performance</div>
+                </div>
+                <div class="complexity-card worst">
+                    <div class="comp-title">Worst Case</div>
+                    <div class="comp-value">O(n²)</div>
+                    <div class="comp-desc">When pivot is smallest/largest</div>
+                </div>
+            </div>
+
+            <!-- Quick Sort Explanation -->
+            <div class="sort-explanation">
+                <h4><i class="fas fa-cogs"></i> How Quick Sort Works:</h4>
+                <ol>
+                    <li>Choose a <strong>pivot</strong> element (last element)</li>
+                    <li>Partition array: elements < pivot go left,> pivot go right</li>
+                    <li>Recursively sort left and right partitions</li>
+                    <li>Combine results (array becomes sorted)</li>
+                </ol>
+                <p class="note"><i class="fas fa-star"></i> <strong>Industry Usage:</strong> Used in Java's
+                    Arrays.sort() for primitive types</p>
+            </div>
+        </section>
+    </div>
+
+    <!-- Footer -->
+    <footer>
+        <div class="footer-content">
+            <div class="footer-left">
+                <h3><i class="fas fa-university"></i> TIMSCDR MCA </h3>
+                <p>Data Structures & Applications Project - Campus Navigation System</p>
+            </div>
+            <div class="footer-right">
+                <div class="concepts">
+                    <h4>Concepts Implemented:</h4>
+                    <div class="concept-tags">
+                        <span class="tag">Dijkstra's Algorithm</span>
+                        <span class="tag">Binary Search Tree</span>
+                        <span class="tag">Quick Sort</span>
+                        <span class="tag">Graph Traversal</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="footer-note">
+            <p> This project demonstrates practical implementation of algorithms used in
+                real-world applications like Google Maps, Databases, and sorting systems.</p>
+        </div>
+    </footer>
+
+    <script src="script.js"></script>
+</body>
+
+</html>
